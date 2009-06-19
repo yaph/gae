@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# BaseHandler class based on
+# GaeBaseHandler class based on
 # http://github.com/ryanwi/twitteroauth
 
 import os
@@ -26,7 +26,6 @@ class GaeBaseHandler(webapp.RequestHandler):
     values = {
       'request': self.request,
       'host': self.request.host,
-      'application_name': 'tweetux',
     }
 
     values.update(template_values)
