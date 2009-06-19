@@ -1,0 +1,8 @@
+# Python Compiler Scripts
+*.pyc
+
+# compiled Java class files
+*.class
+
+# Komodo project files
+*.kpf
