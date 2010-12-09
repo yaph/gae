@@ -26,6 +26,8 @@ class GaeBaseHandler(webapp.RequestHandler):
     values = {
       'request': self.request,
       'host': self.request.host,
+      'page_url': self.request.url,
+      'base_url': self.request.application_url
     }
 
     values.update(template_values)
