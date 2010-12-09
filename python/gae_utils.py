@@ -11,6 +11,8 @@ from google.appengine.ext.webapp import template
 from django.template import TemplateDoesNotExist
 
 class GaeBaseHandler(webapp.RequestHandler):
+  template_values = {};
+
   """Supplies a common template generation function.
 
   When you call generate(), we augment the template variables supplied with
@@ -18,7 +20,6 @@ class GaeBaseHandler(webapp.RequestHandler):
   in the 'request' variable.
   """
   def generate(self, content_type='text/html', template_name='index.html', **template_values):
-
     # set the content type
     content_type += '; charset=utf-8'
     self.response.headers["Content-Type"] = content_type
@@ -29,7 +30,7 @@ class GaeBaseHandler(webapp.RequestHandler):
       'page_url': self.request.url,
       'base_url': self.request.application_url
     }
-
+    values.update(self.template_values)
     values.update(template_values)
     directory = os.path.dirname(__file__)
     path = os.path.join(directory, os.path.join('templates', template_name))
@@ -40,6 +41,9 @@ class GaeBaseHandler(webapp.RequestHandler):
     except TemplateDoesNotExist, e:
       self.response.set_status(404)
       self.response.out.write(template.render(os.path.join('templates', '404.html'), values))
+
+  def set_template_value(self, name, value):
+      self.template_values[name] = value;
 
   def error(self, status_code):
     webapp.RequestHandler.error(self, status_code)
