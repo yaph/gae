@@ -4,8 +4,6 @@
 # http://github.com/ryanwi/twitteroauth
 
 import os
-import wsgiref.handlers
-
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from django.template import TemplateDoesNotExist
@@ -43,7 +41,15 @@ class GaeBaseHandler(webapp.RequestHandler):
       self.response.out.write(template.render(os.path.join('templates', '404.html'), values))
 
   def set_template_value(self, name, value):
-      self.template_values[name] = value;
+    self.template_values[name] = value;
+
+  def get_param(self, name, default_value, type):
+    param = self.request.get(name)
+    if '' == param:
+      param = default_value
+    if 'int' == type:
+      param = int(param)
+    return param
 
   def error(self, status_code):
     webapp.RequestHandler.error(self, status_code)
