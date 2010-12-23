@@ -9,16 +9,17 @@ from django.template import TemplateDoesNotExist
 class BaseHandler(webapp.RequestHandler):
     template_values = {};
 
-    """Supplies a common template generation function.
+    def generate(self, content_type='text/html', template_name='index.html'):
+        """Supplies a common template generation function.
 
-    When you call generate(), we augment the template variables supplied with
-    the current user in the 'user' variable and the current webapp request
-    in the 'request' variable.
+        When you call generate(), we augment the template variables supplied with
+        the current user in the 'user' variable and the current webapp request
+        in the 'request' variable.
 
-    The BaseHandler class is based on code from ryanwi's twitteroauth project
-    @see: http://github.com/ryanwi/twitteroauth
-    """
-    def generate(self, content_type='text/html', template_name='index.html', **template_values):
+        The BaseHandler class is based on code from ryanwi's twitteroauth project
+        @see: http://github.com/ryanwi/twitteroauth
+        """
+
         # set the content type
         content_type += '; charset=utf-8'
         self.response.headers["Content-Type"] = content_type
@@ -30,7 +31,6 @@ class BaseHandler(webapp.RequestHandler):
                   'base_url': self.request.application_url
                   }
         values.update(self.template_values)
-        values.update(template_values)
 
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, os.path.join('templates', template_name))
@@ -55,7 +55,7 @@ class BaseHandler(webapp.RequestHandler):
     def error(self, status_code):
         webapp.RequestHandler.error(self, status_code)
         if status_code == 404:
-            self.generate('404.html')
+            self.generate('text/html', '404.html')
 
     def get_cookie(self, name):
         return self.request.cookies.get(name)
@@ -84,7 +84,7 @@ class HTTP():
     def request(self, url, **params):
         self.request_url = url % urllib.urlencode(params)
         try:
-            result = urlfetch.fetch(self.request_url)#, headers=self.get_headers())
+            result = urlfetch.fetch(self.request_url)
             if result.status_code == 200:
                 return result
             elif result.status_code == 400:
