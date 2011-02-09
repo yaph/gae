@@ -48,10 +48,10 @@ class BaseHandler(webapp.RequestHandler):
     def get_param(self, name, default_value, type):
         param = self.request.get(name)
         if '' == param:
-            param = default_value
+            return default_value
         if 'int' == type:
             param = int(param)
-        if 'url' == type:
+        elif 'url' == type:
             if '' == urlparse.urlparse(param).netloc:
                 return None
         return param
