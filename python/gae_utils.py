@@ -1,6 +1,7 @@
 import os
 import urllib
 import logging
+import urlparse
 from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
@@ -50,6 +51,9 @@ class BaseHandler(webapp.RequestHandler):
             param = default_value
         if 'int' == type:
             param = int(param)
+        if 'url' == type:
+            if '' == urlparse.urlparse(param).netloc:
+                return None
         return param
 
     def error(self, status_code):
@@ -82,7 +86,10 @@ class HTTP():
         return self.headers
         
     def request(self, url, **params):
-        self.request_url = url % urllib.urlencode(params)
+        if 0 < len(params):
+            self.request_url = "%s?%s" % (url, urllib.urlencode(params))
+        else:
+            self.request_url = url
         try:
             result = urlfetch.fetch(self.request_url)
             if result.status_code == 200:
