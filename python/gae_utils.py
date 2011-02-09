@@ -73,6 +73,8 @@ class BaseHandler(webapp.RequestHandler):
         self.response.headers.add_header(
                                          'Set-Cookie', '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' % 
                                          (name, path))
+    def is_ajax(self):
+        return "XMLHttpRequest" == self.request.headers.get("X-Requested-With")
 
 class HTTP():
     request_url = ''
