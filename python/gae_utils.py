@@ -84,7 +84,7 @@ class HTTP():
 
     def get_headers(self):
         return self.headers
-        
+
     def request(self, url, **params):
         if 0 < len(params):
             self.request_url = "%s?%s" % (url, urllib.urlencode(params))
