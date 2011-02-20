@@ -10,6 +10,9 @@ from django.template import TemplateDoesNotExist
 class BaseHandler(webapp.RequestHandler):
     template_values = {};
 
+    def __init__(self):
+        self.template_values = {};
+
     def generate(self, content_type='text/html', template_name='index.html'):
         """Supplies a common template generation function.
 
@@ -52,7 +55,7 @@ class BaseHandler(webapp.RequestHandler):
         if 'int' == type:
             param = int(param)
         elif 'url' == type:
-            if '' == urlparse.urlparse(param).netloc:
+            if Validate().uri(param) is False:
                 return None
         return param
 
@@ -75,6 +78,16 @@ class BaseHandler(webapp.RequestHandler):
                                          (name, path))
     def is_ajax(self):
         return "XMLHttpRequest" == self.request.headers.get("X-Requested-With")
+
+class Validate():
+    def uri(self, uri):
+        try:
+            if urlparse.urlparse(uri).netloc:
+                return True
+            else:
+                return False
+        except AttributeError:
+            return False
 
 class HTTP():
     request_url = ''
