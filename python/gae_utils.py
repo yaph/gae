@@ -1,33 +1,20 @@
+# -*- coding: utf-8 -*-
 import os
-from google.appengine.dist import use_library
-use_library('django', '1.2')
-
-import urllib
-import logging
 import urlparse
+import logging
+import webapp2
+import jinja2
 from google.appengine.api import urlfetch
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
-from django.template import TemplateDoesNotExist
 
-class BaseHandler(webapp.RequestHandler):
+jinja_environment = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
+
+class BaseHandler(webapp2.RequestHandler):
     template_values = {};
 
-    def __init__(self):
-        self.template_values = {};
-
     def generate(self, content_type='text/html', template_name='index.html'):
-        """Supplies a common template generation function.
+        """Supplies a common template generation function."""
 
-        When you call generate(), we augment the template variables supplied with
-        the current user in the 'user' variable and the current webapp request
-        in the 'request' variable.
-
-        The BaseHandler class is based on code from ryanwi's twitteroauth project
-        @see: http://github.com/ryanwi/twitteroauth
-        """
-
-        # set the content type
         content_type += '; charset=utf-8'
         self.response.headers["Content-Type"] = content_type
 
@@ -39,14 +26,8 @@ class BaseHandler(webapp.RequestHandler):
                   }
         values.update(self.template_values)
 
-        directory = os.path.dirname(__file__)
-        path = os.path.join(directory, os.path.join('templates', template_name))
-
-        try:
-            self.response.out.write(template.render(path, values))
-        except TemplateDoesNotExist, e:
-            self.response.set_status(404)
-            self.response.out.write(template.render(os.path.join('templates', '404.html'), values))
+        template = jinja_environment.get_template(template_name)
+        self.response.out.write(template.render(self.template_values).encode('utf8'))
 
     def set_template_value(self, name, value):
         self.template_values[name] = value;
@@ -63,7 +44,7 @@ class BaseHandler(webapp.RequestHandler):
         return param
 
     def error(self, status_code):
-        webapp.RequestHandler.error(self, status_code)
+        webapp2.RequestHandler.error(self, status_code)
         if status_code == 404:
             self.generate('text/html', '404.html')
 
@@ -79,8 +60,10 @@ class BaseHandler(webapp.RequestHandler):
         self.response.headers.add_header(
                                          'Set-Cookie', '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' % 
                                          (name, path))
+
     def is_ajax(self):
         return "XMLHttpRequest" == self.request.headers.get("X-Requested-With")
+
 
 class Validate():
     def uri(self, uri):
@@ -91,6 +74,7 @@ class Validate():
                 return False
         except AttributeError:
             return False
+
 
 class HTTP():
     request_url = ''
@@ -120,6 +104,3 @@ class HTTP():
 
     def get_request_url(self):
         return self.request_url
-
-class Cache():
-    pass
