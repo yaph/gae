@@ -27,7 +27,7 @@ class BaseHandler(webapp2.RequestHandler):
         values.update(self.template_values)
 
         template = jinja_environment.get_template(template_name)
-        self.response.out.write(template.render(self.template_values).encode('utf8'))
+        self.response.out.write(template.render(self.template_values))
 
     def set_template_value(self, name, value):
         self.template_values[name] = value;
