@@ -6,11 +6,12 @@ import webapp2
 import jinja2
 from google.appengine.api import urlfetch
 
-jinja_environment = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
 
 class BaseHandler(webapp2.RequestHandler):
     template_values = {};
+
+    jinja_env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
 
     def generate(self, content_type='text/html', template_name='index.html'):
         """Supplies a common template generation function."""
@@ -26,7 +27,7 @@ class BaseHandler(webapp2.RequestHandler):
                   }
         values.update(self.template_values)
 
-        template = jinja_environment.get_template(template_name)
+        template = self.jinja_env.get_template(template_name)
         self.response.out.write(template.render(self.template_values))
 
     def set_template_value(self, name, value):
