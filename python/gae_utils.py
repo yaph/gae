@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import urlparse
+import urllib
 import logging
 import webapp2
 import jinja2
@@ -54,12 +55,12 @@ class BaseHandler(webapp2.RequestHandler):
 
     def set_cookie(self, name, value, path='/', expires="Fri, 28-Dec-2666 23:59:59 GMT"):
         self.response.headers.add_header(
-                                         'Set-Cookie', '%s=%s; path=%s; expires=%s' % 
+                                         'Set-Cookie', '%s=%s; path=%s; expires=%s' %
                                          (name, value, path, expires))
 
     def expire_cookie(self, name, path='/'):
         self.response.headers.add_header(
-                                         'Set-Cookie', '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' % 
+                                         'Set-Cookie', '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
                                          (name, path))
 
     def is_ajax(self):
